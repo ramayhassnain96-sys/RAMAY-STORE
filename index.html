@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMAY BRAND COLLECTION | ELITE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+        :root { --bg: #050505; --accent: #00d4ff; --price-color: #ff9f1a; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: white; margin: 0; }
+        
+        header { background: rgba(0,0,0,0.9); padding: 15px; text-align: center; border-bottom: 2px solid var(--accent); }
+        .dp-img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; margin-bottom: 10px; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        
+        .taskbar { 
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 10px; 
+            text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: center; gap: 20px; font-size: 0.7rem; 
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        .card { background: #111; padding: 10px; border-radius: 10px; cursor: pointer; border: 1px solid #333; }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+        .card-price { font-size: 1.2rem; font-weight: 700; color: var(--price-color); }
+        
+        #detail-view { display:none; padding:20px; background: #000; position:fixed; top:0; left:0; width:100%; height:100%; overflow-y:auto; z-index: 200; }
+        .input-field { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 5px; margin-top: 10px; box-sizing: border-box; }
+        .desc-box { background: #111; padding: 15px; border-left: 4px solid var(--accent); margin: 20px 0; color: #eee; font-size: 0.95rem; }
+        .whatsapp-box { font-size: 1.3rem; font-weight: 700; color: var(--accent); text-align: center; margin: 20px 0; border: 2px dashed var(--accent); padding: 15px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="https://i.postimg.cc/Qdx0MWBN/ecba431d918574070666a2130248f535.jpg" class="dp-img" alt="RAMAY DP">
+    <div class="logo">RAMAY BRAND COLLECTION</div>
+</header>
+
+<div class="taskbar">
+    <span>Explore</span>
+    <span>New Arrivals</span>
+    <span>Best Sellers</span>
+    <span>Track Order</span>
+</div>
+
+<div class="grid" id="product-list"></div>
+
+<div id="detail-view">
+    <button onclick="showHome()" style="background:none; border:none; color:white; cursor:pointer; font-size:1rem;">← BACK</button>
+    <img id="d-img" style="width:100%; height:300px; object-fit:cover; border-radius:10px; margin-top:10px;">
+    <h2 id="d-title"></h2>
+    <div class="desc-box" id="d-long-desc"></div>
+    <div id="d-price" style="font-size: 2.5rem; font-weight: 700; color: var(--price-color);"></div>
+    <input type="text" id="promo" class="input-field" placeholder="Enter Promo Code (RAMAY1)">
+    <button style="background:var(--accent); border:none; padding:15px; width:100%; font-weight:bold; cursor:pointer;" onclick="applyDiscount()">APPLY CODE</button>
+    <p id="msg"></p>
+    <div class="whatsapp-box">WhatsApp: 0348-2218511</div>
+    <a href="https://wa.me/923482218511" style="background:var(--price-color); display:block; text-align:center; padding:20px; color:black; font-weight:bold; text-decoration:none; border-radius:5px;">CONFIRM ORDER ON WHATSAPP</a>
+</div>
+
+<script>
+    let currentP = 0;
+    const products = [
+        {t: "Flora Elite", p: 3850, i: "https://i.postimg.cc/gjhhtgXS/3600-3.jpg", d: "Experience the premium feel of high-quality lawn fabric. Featuring intricate floral embroidery and a breathable texture."},
+        {t: "Breeze Sky", p: 3850, i: "https://i.postimg.cc/8cvvXZJX/3600-4.jpg", d: "Designed for those who prefer a light and airy feel. The Breeze Sky collection uses cooling fabric technology."},
+        {t: "Crimson Royal", p: 3850, i: "https://i.postimg.cc/T1bbNtLH/3600-5.jpg", d: "A bold statement piece with a deep crimson base and elegant golden embroidery for formal gatherings."},
+        {t: "Master Kurta", p: 7250, i: "https://i.postimg.cc/hGPcChQz/7000.jpg", d: "Our flagship Master Kurta combines traditional aesthetics with a modern, sharp fit. Made from high-density cotton."},
+        {t: "Noir Classic", p: 7250, i: "https://i.postimg.cc/s26yby5M/7000-2.jpg", d: "Timeless black formal kurta that brings a sophisticated edge to your wardrobe. Perfect for professional events."},
+        {t: "Royal Purple", p: 7250, i: "https://i.postimg.cc/g0Sd1d3w/7000-3.jpg", d: "Elegant purple finish with a unique sheen, perfect for evening events where you want to stand out."},
+        {t: "Earth Tone", p: 7250, i: "https://i.postimg.cc/W4Wjxj0F/7000-4.jpg", d: "Natural brown tones with premium texture, ideal for those who value organic style and comfort."},
+        {t: "Beige Luxury", p: 7250, i: "https://i.postimg.cc/Pq3h0h18/7000-5.jpg", d: "Soft beige for a clean, formal look. Minimalist yet powerful, this kurta is a staple for every man."},
+        {t: "Olive Elite", p: 7250, i: "https://i.postimg.cc/N0JYZYR2/7000-6.jpg", d: "A unique olive shade that is highly durable and soft, offering the perfect blend of fashion and functionality."},
+        {t: "Grey Formal", p: 7250, i: "https://i.postimg.cc/pdXR0y59/7000-7.jpg", d: "Sharp grey styling for office wear or formal meetings. Crisp, clean, and perfectly tailored."},
+        {t: "Soft Petal", p: 3750, i: "https://i.postimg.cc/6qZZbM2Y/3500.jpg", d: "The softest lawn material available, providing all-day comfort and an elegant drape."},
+        {t: "Summer Breeze", p: 3750, i: "https://i.postimg.cc/W3Cr7B3H/3500-(2).jpg", d: "Stay cool with this summer special, engineered to be lightweight and moisture-wicking."},
+        {t: "Lawn Master", p: 3750, i: "https://i.postimg.cc/fyddq8tf/3500-(3).jpg", d: "High-quality lawn for daily use, featuring vibrant prints that do not fade easily."},
+        {t: "Airy Touch", p: 3750, i: "https://i.postimg.cc/j5mNhp59/3500-(4).jpg", d: "Extremely lightweight and comfortable fabric for effortless summer styling."},
+        {t: "Designer Edit", p: 3750, i: "https://i.postimg.cc/QC77Yf9m/3500-(5).jpg", d: "An exclusive designer cut crafted for those who appreciate modern artistic expression."},
+        {t: "Style Icon", p: 3750, i: "https://i.postimg.cc/j2ff3MwX/3500-(6).jpg", d: "Be a style icon with this piece, designed to turn heads at every social gathering."},
+        {t: "Luxe Wear", p: 3850, i: "https://i.postimg.cc/5yzzKsYP/3600-(2).jpg", d: "A pure luxury feeling fabric that provides an unmatched sense of comfort and prestige."},
+        {t: "Artisan Soul", p: 3650, i: "https://i.postimg.cc/bwntzCmZ/3400.jpg", d: "Featuring authentic handcrafted design elements that celebrate traditional craftsmanship."},
+        {t: "Golden Hour", p: 3650, i: "https://i.postimg.cc/W1Zk2W53/3400-(2).jpg", d: "A fabric that shines in every light, giving you a radiant look throughout the day."},
+        {t: "Craftsmanship", p: 3749, i: "https://i.postimg.cc/8zv61KZF/3499.jpg", d: "Superior stitching quality and durability, built to last while maintaining its look."},
+        {t: "Silk Touch", p: 3750, i: "https://i.postimg.cc/6qZZbM2Y/3500.jpg", d: "Silky finish with a smooth texture that feels gentle against your skin."},
+        {t: "Grand Luxe", p: 3850, i: "https://i.postimg.cc/5yzzKsYP/3600-(2).jpg", d: "The grandest luxury design, reserved for special occasions and high-profile events."},
+        {t: "Chic Style", p: 3650, i: "https://i.postimg.cc/bwntzCmZ/3400.jpg", d: "Modern and chic appearance, ideal for contemporary fashion lovers."},
+        {t: "Golden Elite", p: 3650, i: "https://i.postimg.cc/W1Zk2W53/3400-(2).jpg", d: "Golden embroidery detailing that adds a regal touch to the overall design."},
+        {t: "Master Piece", p: 3749, i: "https://i.postimg.cc/8zv61KZF/3499.jpg", d: "A true masterpiece of design, blending creativity with high-end textile technology."},
+        {t: "Final Choice", p: 3850, i: "https://i.postimg.cc/T1bbNtLH/3600-5.jpg", d: "The final touch of perfection for your wardrobe, offering unparalleled style and confidence."}
+    ];
+
+    function showDetail(t, p, i, d) {
+        currentP = p;
+        document.getElementById('product-list').style.display = 'none';
+        document.getElementById('detail-view').style.display = 'block';
+        document.getElementById('d-title').innerText = t;
+        document.getElementById('d-long-desc').innerText = d;
+        document.getElementById('d-price').innerHTML = "Rs. " + p;
+        document.getElementById('d-img').src = i;
+    }
+    function applyDiscount() {
+        let code = document.getElementById('promo').value;
+        if(code === "RAMAY1") {
+            document.getElementById('d-price').innerHTML = "<span style='text-decoration:line-through; color:#666;'>Rs. " + currentP + "</span> <br> Rs. " + (currentP - 500);
+            document.getElementById('msg').innerText = "Congratulations! Discount Applied.";
+            document.getElementById('msg').style.color = "var(--accent)";
+        } else {
+            document.getElementById('msg').innerText = "Wrong Promo Code! Try again.";
+            document.getElementById('msg').style.color = "red";
+        }
+    }
+    function showHome() {
+        document.getElementById('product-list').style.display = 'grid';
+        document.getElementById('detail-view').style.display = 'none';
+    }
+    const list = document.getElementById('product-list');
+    products.forEach(p => {
+        list.innerHTML += `<div class="card" onclick="showDetail('${p.t}', ${p.p}, '${p.i}', '${p.d}')">
+                             <img src="${p.i}">
+                             <div style="margin-top:10px; font-weight:bold;">${p.t}</div>
+                             <div class="card-price">Rs. ${p.p}</div>
+                           </div>`;
+    });
+</script>
+</body>
+</html>
